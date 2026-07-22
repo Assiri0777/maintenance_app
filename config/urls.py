@@ -2,12 +2,14 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
-# استدعاء الـ views من التطبيقين بأسماء مختلفة لتجنب التداخل
-from maitenance import views as maintenance_views   # التطبيق الأول القديم
-from yard_assets import views as yard_views         # التطبيق الثاني الجديد
+ 
+from maitenance import views as maintenance_views  
+from yard_assets import views as yard_views         
 
 urlpatterns = [
+    path('',RedirectView.as_view(url='admin/', permanent=False)),
     path('admin/', admin.site.urls),
     
     # روابط التطبيق الأول القديم
