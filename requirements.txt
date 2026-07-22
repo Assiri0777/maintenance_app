@@ -3,3 +3,4 @@ gunicorn
 whitenoise
 django-import-export
 pillow
+openpyxl
