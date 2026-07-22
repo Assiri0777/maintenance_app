@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 30px;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background: #fff;
+        border: 1px solid #ccc;
+    }
+    .form-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .form-header h2 { font-size: 1.3rem; margin: 5px 0; color: #1a2a3a; }
+    .form-header h3 { font-size: 1.1rem; margin: 5px 0; font-weight: normal; }
+    .form-header h1 { font-size: 1.5rem; margin: 15px 0; text-decoration: underline; }
+    
+    .radio-group {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 25px;
+        font-size: 1rem;
+    }
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    
+    .route-group {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 25px;
+    }
+    .route-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+    }
+    .route-cell label { font-weight: bold; font-size: 1rem; }
+    .route-cell input {
+        flex: 1;
+        border: none;
+        border-bottom: 1px solid #333;
+        padding: 5px;
+        font-size: 1rem;
+        background: transparent;
+    }
+    
+    .items-table, .rep-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .items-table th, .items-table td {
+        border: 1px solid #999;
+        padding: 10px;
+        text-align: center;
+    }
+    .items-table th {
+        background-color: #e6ebf0;
+        font-size: 0.95rem;
+    }
+    .items-table td input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 4px;
+        box-sizing: border-box;
+        text-align: inherit;
+        font-size: 0.95rem;
+    }
+    
+    .rep-title-row {
+        background-color: #b8c5d6;
+        color: #1a2a3a;
+        text-align: center;
+        padding: 8px;
+        font-size: 1.05rem;
+        font-weight: bold;
+        border: 1px solid #999;
+    }
+    .rep-table td {
+        border: 1px solid #999;
+        padding: 10px;
+        width: 50%;
+    }
+    .rep-grid-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .rep-grid-cell label {
+        min-width: 80px;
+        font-size: 0.95rem;
+    }
+    .rep-grid-cell input {
+        flex: 1;
+        border: none;
+        border-bottom: 1px dashed #666;
+        padding: 3px;
+        background: transparent;
+        font-size: 0.95rem;
+    }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>UR Production Engineering Department</h2>
+        <h3>JRAK WELL SERVICES OPERATIONS SUPPORT UNIT (OSU)</h3>
+        <h1>Delivery & Received Form</h1>
+    </div>
+
+    <div class="radio-group">
+        <label><input type="radio" name="form_type" value="transfer" {% if obj.movement_type|lower == 'transfer' or obj.movement_type == 'Out' %}checked{% endif %}> Transfer</label>
+        <label><input type="radio" name="form_type" value="return" {% if obj.movement_type|lower == 'return back' or obj.movement_type == 'In' %}checked{% endif %}> Return back</label>
+        <label><input type="radio" name="form_type" value="use" {% if obj.movement_type|lower == 'for use' or obj.movement_type|lower == 'use' %}checked{% endif %}> For use</label>
+        <label><input type="radio" name="form_type" value="loan" {% if obj.movement_type|lower == 'loan' %}checked{% endif %}> Loan</label>
+    </div>
+
+    <div class="route-group">
+        <div class="route-cell">
+            <label>From:</label>
+            <input type="text" name="departure_site" placeholder="Enter departure yard/site" value="{{ obj.departure_site|default:'Main Yard' }}">
+        </div>
+        <div class="route-cell">
+            <label>To:</label>
+            <input type="text" name="destination_site" placeholder="Enter destination site" value="{{ obj.destination_site }}">
+        </div>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 8%;">S.N.</th>
+                <th style="width: 47%;">DESCRIPTION</th>
+                <th style="width: 15%;">S/N</th>
+                <th style="width: 10%;">QTY</th>
+                <th style="width: 20%;">REMARKS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if items %}
+                {% for item in items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <input type="text" name="desc_{{ forloop.counter }}" value="{% if item.flange %}Flange{% if item.flange.size %} ({{ item.flange.size }}){% endif %}{% elif item.wellhead_tree %}Wellhead Tree{% elif item.gate_valve %}Gate Valve{% elif item.bpv_part %}{{ item.bpv_part.part_type }}{% else %}Unknown{% endif %}">
+                    </td>
+                    <td>
+                        <input type="text" name="sn_{{ forloop.counter }}" value="{% if item.serial_number %}{{ item.serial_number }}{% elif item.flange %}{{ item.flange.asset_id }}{% elif item.wellhead_tree %}{{ item.wellhead_tree.asset_id }}{% elif item.gate_valve %}{{ item.gate_valve.asset_id }}{% else %}N/A{% endif %}">
+                    </td>
+                    <td>
+                        <input type="number" name="qty_{{ forloop.counter }}" value="{{ item.quantity }}">
+                    </td>
+                    <td>
+                        <input type="text" name="remarks_{{ forloop.counter }}" value="">
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" name="desc_1" value="{{ obj.item_name }}" placeholder="e.g., BPV Parts / Valves"></td>
+                    <td><input type="text" name="sn_1" value="{{ obj.item_serial }}"></td>
+                    <td><input type="number" name="qty_1" value="{{ obj.quantity }}"></td>
+                    <td><input type="text" name="remarks_1" value="{{ obj.notes|default:'' }}"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" name="desc_2" value="{{ obj.desc_2 }}"></td>
+                    <td><input type="text" name="sn_2" value="{{ obj.sn_2 }}"></td>
+                    <td><input type="number" name="qty_2" value="{{ obj.qty_2 }}"></td>
+                    <td><input type="text" name="remarks_2" value="{{ obj.remarks_2 }}"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" name="desc_3" value="{{ obj.desc_3 }}"></td>
+                    <td><input type="text" name="sn_3" value="{{ obj.sn_3 }}"></td>
+                    <td><input type="number" name="qty_3" value="{{ obj.qty_3 }}"></td>
+                    <td><input type="text" name="remarks_3" value="{{ obj.remarks_3 }}"></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td><input type="text" name="desc_4" value="{{ obj.desc_4 }}"></td>
+                    <td><input type="text" name="sn_4" value="{{ obj.sn_4 }}"></td>
+                    <td><input type="number" name="qty_4" value="{{ obj.qty_4 }}"></td>
+                    <td><input type="text" name="remarks_4" value="{{ obj.remarks_4 }}"></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <table class="rep-table">
+        <thead>
+            <tr>
+                <th colspan="2" class="rep-title-row">OSU Representative</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Name:</label><input type="text" name="osu_name" value="{% if obj.movement_type|lower == 'return back' or obj.movement_type == 'In' %}{{ obj.Receiver_Name }}{% else %}{{ obj.Sender_Name }}{% endif %}"></div></td>
+                <td><div class="rep-grid-cell"><label>Date:</label><input type="text" name="osu_date" value="{{ obj.movement_date|date:'d-m-Y' }}"></div></td>
+            </tr>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Badge:</label><input type="text" name="osu_badge" value="{{ obj.osu_badge_number }}"></div></td>
+                <td><div class="rep-grid-cell"><label>Signature:</label><input type="text" name="osu_signature" value="{{ obj.osu_signature_code }}"></div></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="rep-table">
+        <thead>
+            <tr>
+                <th colspan="2" class="rep-title-row">Transportation by</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Name:</label><input type="text" name="trans_name" value="{{ obj.Driver_Name }}"></div></td>
+                <td><div class="rep-grid-cell"><label>Date:</label><input type="text" name="trans_date" value="{{ obj.movement_date|date:'d-m-Y' }}"></div></td>
+            </tr>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Badge:</label><input type="text" name="trans_badge" value="{{ obj.trans_badge }}"></div></td>
+                <td><div class="rep-grid-cell"><label>Signature:</label><input type="text" name="trans_sig" value="{{ obj.trans_sig }}"></div></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="rep-table">
+        <thead>
+            <tr>
+                <th colspan="2" class="rep-title-row">Site/Unit Representative</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Name:</label><input type="text" name="site_name_2" value="{{ obj.site_name_2 }}"></div></td>
+                <td><div class="rep-grid-cell"><label>Date:</label><input type="text" name="site_date_2" value="{{ obj.site_date_2|date:'d-m-Y' }}"></div></td>
+            </tr>
+            <tr>
+                <td><div class="rep-grid-cell"><label>Badge:</label><input type="text" name="site_badge_2" value="{{ obj.site_badge_2 }}"></div></td>
+                <td><div class="rep-grid-cell"><label>Signature:</label><input type="text" name="site_sig_2" value="{{ obj.site_sig_2 }}"></div></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

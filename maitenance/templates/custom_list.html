@@ -1,0 +1,21 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+<div style="display: flex; gap: 15px; margin-bottom: 25px;">
+    <div style="flex: 1; background: #d4edda; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #c3e6cb;">
+        <h4 style="margin:0; color: #155724;">Active</h4>
+        <p style="font-size: 24px; font-weight: bold; margin-top: 10px;">{{ active_count }}</p>
+    </div>
+    <div style="flex: 1; background: #fff3cd; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #ffeeba;">
+        <h4 style="margin:0; color: #856404;">Need Maintenance</h4>
+        <p style="font-size: 24px; font-weight: bold; margin-top: 10px;">{{ maintenance_count }}</p>
+    </div>
+    <div style="flex: 1; background: #f8d7da; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #f5c6cb;">
+        <h4 style="margin:0; color: #721c24;">Out of Service</h4>
+        <p style="font-size: 24px; font-weight: bold; margin-top: 10px;">{{ outofservice_count }}</p>
+    </div>
+</div>
+
+{{ block.super }}
+
+{% endblock %}

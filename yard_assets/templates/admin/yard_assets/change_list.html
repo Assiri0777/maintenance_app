@@ -1,0 +1,48 @@
+{% extends "admin/change_list.html" %}
+
+{% block result_list %}
+    
+    {% if is_bpv %}
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; margin-top: 10px; font-family: 'Roboto', 'Segoe UI', sans-serif;">
+            <strong style="color: #417690; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">📊 Current BPV Stock & Dispatched Level :</strong>
+            
+            {% for item in bpv_items %}
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e0e0e0; padding: 12px 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); border-left: 5px solid #79aec8;">
+                    <div style="font-size: 15px; font-weight: bold; color: #333; flex: 2;">{{ item.part_type }}</div>
+                    
+                    <div style="display: flex; gap: 35px; flex: 3; justify-content: flex-end; align-items: center;">
+                        <div>
+                            <small style="color: #2e7d32; font-weight: 600; display: block; font-size: 10px;">AVAILABLE</small>
+                            <span style="font-size: 18px; font-weight: bold; color: #2e7d32;">{{ item.quantity }} <small style="font-size: 11px; font-weight: normal; color: #777;">Pcs</small></span>
+                        </div>
+                        <div>
+                            <small style="color: #ba2121; font-weight: 600; display: block; font-size: 10px;">DISPATCHED (OUT)</small>
+                            <span style="font-size: 18px; font-weight: bold; color: #ba2121;">{{ item.dispatched_qty }} <small style="font-size: 11px; font-weight: normal; color: #777;">Pcs</small></span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 600; color: {% if item.status == 'Available' %}#2e7d32{% else %}#c62828{% endif %}; background: {% if item.status == 'Available' %}#e8f5e9{% else %}#ffebee{% endif %}; padding: 4px 10px; border-radius: 12px; min-width: 70px; text-align: center;">
+                            {{ item.status }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% elif stat_total is not None %}
+        <div style="display: flex; gap: 15px; margin-bottom: 20px; margin-top: 10px; font-family: 'Roboto', 'Segoe UI', sans-serif;">
+            <div style="flex: 1; background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; border-left: 5px solid #79aec8; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <h4 style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase;">Total Registered</h4>
+                <p style="margin: 8px 0 0 0; font-size: 28px; font-weight: bold; color: #333;">{{ stat_total }}</p>
+            </div>
+            <div style="flex: 1; background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; border-left: 5px solid #417690; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <h4 style="margin: 0; color: #417690; font-size: 12px; text-transform: uppercase;">Available In Yard</h4>
+                <p style="margin: 8px 0 0 0; font-size: 28px; font-weight: bold; color: #417690;">{{ stat_available }}</p>
+            </div>
+            <div style="flex: 1; background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; border-left: 5px solid #ba2121; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <h4 style="margin: 0; color: #ba2121; font-size: 12px; text-transform: uppercase;">Dispatched (Out)</h4>
+                <p style="margin: 8px 0 0 0; font-size: 28px; font-weight: bold; color: #ba2121;">{{ stat_dispatched }}</p>
+            </div>
+        </div>
+    {% endif %}
+    
+    {{ block.super }}
+{% endblock %}
