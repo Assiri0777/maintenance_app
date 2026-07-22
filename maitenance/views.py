@@ -107,4 +107,4 @@ def dashboard_view(request):
         # 🆕 تمرير بيانات الجدول الجديد إلى الـ HTML
         'asset_data': asset_data,
     }
-    return render(request, 'maitenance/dashboard.html', context)
+    return render(request, 'Maitenance/dashboard.html', context)
